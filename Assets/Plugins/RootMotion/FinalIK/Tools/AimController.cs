@@ -28,6 +28,8 @@ namespace RootMotion.FinalIK {
 		/// </summary>
 		public Transform target;
 
+		private Vector3 worldPosition;
+
 		[Tooltip("The time it takes to switch targets.")]
 		/// <summary>
 		/// The time it takes to switch targets.
@@ -146,9 +148,13 @@ namespace RootMotion.FinalIK {
 			if (target != lastTarget) {
                 if (lastTarget == null && target != null && ik.solver.IKPositionWeight <= 0f)
                 {
-                    lastPosition = target.position;
-                    dir = target.position - pivot;
-                    ik.solver.IKPosition = target.position + offset;
+	                worldPosition = transform.TransformPoint(target.position);
+                    //lastPosition = target.position;
+                    lastPosition = worldPosition;
+                    dir = worldPosition - pivot;
+                    //dir = target.position - pivot;
+                    ik.solver.IKPosition = worldPosition + offset;
+                    //ik.solver.IKPosition = target.position + offset;
                 }
                 else
                 {

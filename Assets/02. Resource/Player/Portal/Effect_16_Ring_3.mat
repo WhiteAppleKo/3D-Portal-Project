@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Effect_16_Ring_3
+  m_Shader: {fileID: 4800000, guid: 1d58a8e283100ea4f8435e923e54553e, type: 3}
+  m_Parent: {fileID: 2100000, guid: 9063dac733a45c441b6cbdd56d80e8a7, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - IS_MASK_FADE
+  - IS_NORMAL_ANIMATE
+  - IS_NORMAL_DISTORTION
+  - IS_SOFT_PARTICLES
+  - IS_TEXTURE_BLEND
+  m_InvalidKeywords:
+  - IS_UNITY_PARTICLE_INSTANCING_ENABLED
+  - _ALPHAPREMULTIPLY_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _FixedMaskTex:
+        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: a1e4bc17d92703c46b85af820c49f976, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalTex:
+        m_Texture: {fileID: 2800000, guid: 4dc31e0e4a3cb0e40986e1482a3d6686, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BlendDst: 10
+    - _ColorFactor: 4
+    - _MaskFade: 1
+    - _NormalDistortion: 1
+    - _NormalDistortionFactor: 1
+    m_Colors:
+    - _TintColor: {r: 0.16042183, g: 0.40427372, b: 0.9716981, a: 1}
+  m_BuildTextureStacks: []

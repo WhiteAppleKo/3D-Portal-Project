@@ -7,10 +7,14 @@ using UnityEngine.TextCore.Text;
 
 public class PlayerController : MonoBehaviour
 {
+    private static readonly int MOVE_X = Animator.StringToHash("MoveX");
+    private static readonly int MOVE_Z = Animator.StringToHash("MoveZ");
+    private static readonly int JUMP = Animator.StringToHash("Jump");
+
     [Header("Player Movement")]
-    public float walkSpeed = 5f;
-    public float runSpeed = 10f;
-    public float jumpForce = 12f;
+    public float walkSpeed = 1f;
+    public float runSpeed = 2f;
+    public float jumpForce = 2f;
     public CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
@@ -20,15 +24,18 @@ public class PlayerController : MonoBehaviour
     public float mouseSensitivity = 15f;
     public float minY = -60f;
     public float maxY = 60f;
-    public Transform target;
+    public Camera mainCamera;
     private float verticalLookRotation = 0f;
-    private Quaternion initialTargetPosition;
-
-    public float latRad = 0;
-    public float lonRad = 0;
+    private float horizontalLookRotation = 0f;
+    private Quaternion initialCameraRotation;
+    private Vector3 rotation;
+    public float rotationSpeed = 10f;
+    
+    [Header("Animation")]
+    public Animator animator;
     private void Start()
     {
-        initialTargetPosition = target.transform.localRotation;
+        initialCameraRotation = mainCamera.transform.localRotation;
     }
 
     private void Update()
@@ -40,12 +47,16 @@ public class PlayerController : MonoBehaviour
     private void UpdateMove()
     {
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxis("Horizontal") * speed;
+        float moveZ = Input.GetAxis("Vertical") * speed;
+        
+        animator.SetFloat(MOVE_X, moveX);
+        animator.SetFloat(MOVE_Z, moveZ);
+        
+        // Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        // controller.Move(move * (speed * Time.deltaTime));
 
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        controller.Move(move * (speed * Time.deltaTime));
-
+        
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
@@ -53,6 +64,7 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
+            animator.SetBool(JUMP, true);
             velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
         }
     }
@@ -61,23 +73,18 @@ public class PlayerController : MonoBehaviour
     {
         float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-
-        Quaternion yawRotation = Quaternion.AngleAxis(mouseX, Vector3.up);
-        //target.transform.rotation *= yawRotation;
         
-
-        //Quaternion pitchRotation = Quaternion.AngleAxis(verticalLookRotation, Vector3.right);
-        //target.transform.localRotation = initialTargetPosition * pitchRotation;
-
-        latRad += Mathf.Deg2Rad * mouseY;
-        lonRad += Mathf.Deg2Rad * mouseX;
-        latRad = Mathf.Clamp(latRad, minY, maxY);
-
-        // 구체 표면에서의 x, y, z 좌표 계산
-        float x = 10 * Mathf.Cos(latRad) * Mathf.Cos(lonRad);
-        float y = 10 * Mathf.Sin(latRad);
-        float z = 10 * Mathf.Cos(latRad) * Mathf.Sin(lonRad);
+        horizontalLookRotation += mouseX;
+        verticalLookRotation -= mouseY;
+        verticalLookRotation = Mathf.Clamp(verticalLookRotation, minY, maxY);
         
-        target.transform.position = new Vector3(-x, y, z);
+        Vector3 rotation = new Vector3(verticalLookRotation, horizontalLookRotation, 0f);
+        Quaternion targetRotation = Quaternion.Euler(rotation);
+        
+        // 부드러운 회전 적용 (Lerp 또는 Slerp 사용)
+        mainCamera.transform.localRotation = Quaternion.Slerp(initialCameraRotation, targetRotation, Time.deltaTime * rotationSpeed);
+
+        // currentRotation 업데이트 (현재 회전 상태 저장)
+        initialCameraRotation = mainCamera.transform.localRotation;
     }
 }
