@@ -15,13 +15,12 @@ public class Portal : MonoBehaviour {
     // Private variables
     RenderTexture viewTexture;
     Camera portalCam;
-    Camera playerCam;
+    public Camera playerCam;
     Material firstRecursionMat;
     List<PortalTraveller> trackedTravellers;
     MeshFilter screenMeshFilter;
 
     void Awake () {
-        playerCam = Camera.main;
         portalCam = GetComponentInChildren<Camera> ();
         portalCam.enabled = false;
         trackedTravellers = new List<PortalTraveller> ();
@@ -59,9 +58,6 @@ public class Portal : MonoBehaviour {
                 //UpdateSliceParams (traveller);
                 traveller.previousOffsetFromPortal = offsetFromPortal;
             }
-            
-            
-            
         }
     }
 
