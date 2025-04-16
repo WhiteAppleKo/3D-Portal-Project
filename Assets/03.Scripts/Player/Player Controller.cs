@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour
     
     [Header("Camera Movement")]
     public float mouseSensitivity = 15f;
-    public float minY = -60f;
-    public float maxY = 60f;
+    public float minY = -50f;
+    public float maxY = 50f;
     public Camera mainCamera;
     private float verticalLookRotation = 0f;
     private float horizontalLookRotation = 0f;
@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
         initialCameraRotation = mainCamera.transform.localRotation;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         UpdateMove();
         UpdateCameraAngle();
