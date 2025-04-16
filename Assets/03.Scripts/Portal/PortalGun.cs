@@ -8,24 +8,11 @@ public class PortalGun : MonoBehaviour
     public Transform firePos;
     public Transform aimTarget;
     public GameObject laser;
-    public GameObject[] portalPrefab;
-    
-    private GameObject[] portals = new GameObject[2];
+    public GameObject[] portals;
     
     private float fireRate = 0.5f;
     private float currentFireRate = 0f;
     private int portalIndex = 0;
-
-    private void Start()
-    {
-        for (int i = 0; i < portals.Length; i++)
-        {
-            portals[i] = Instantiate(portalPrefab[i], 
-                new Vector3(1000,1000,1000), 
-                Quaternion.identity);
-        }
-        
-    }
 
     void Update()
     {
@@ -57,7 +44,7 @@ public class PortalGun : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             Debug.Log("Hit Object: " + hit.collider.gameObject.name);
-            Vector3 spawnPosition = hit.point;
+            Vector3 spawnPosition = hit.point + hit.normal;
             Quaternion spawnRotation = Quaternion.LookRotation(hit.normal);
             portals[portalIndex].transform.position = spawnPosition;
             portals[portalIndex].transform.rotation = spawnRotation;

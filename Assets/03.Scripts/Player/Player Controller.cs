@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
         initialCameraRotation = mainCamera.transform.localRotation;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         UpdateMove();
         UpdateCameraAngle();

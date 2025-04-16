@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -9,17 +11,9 @@ public class MainCamera : MonoBehaviour {
     void Awake () {
         portals = FindObjectsOfType<Portal> ();
     }
-    
-    void OnEnable() {
-        RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
-    }
 
-    void OnDisable() {
-        RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
-    }
-
-    void OnBeginCameraRendering (ScriptableRenderContext context, Camera camera) {
-        Debug.Log ("OnPreCull");
+    private void Update()
+    {
         for (int i = 0; i < portals.Length; i++) {
             portals[i].PrePortalRender ();
         }
@@ -30,7 +24,5 @@ public class MainCamera : MonoBehaviour {
         for (int i = 0; i < portals.Length; i++) {
             portals[i].PostPortalRender ();
         }
-
     }
-
 }

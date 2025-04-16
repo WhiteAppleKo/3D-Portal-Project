@@ -7,8 +7,8 @@ public class FollowHead : MonoBehaviour
 {
     public Transform head;
 
-    private void Update()
+    private void FixedUpdate()
     {
-        gameObject.transform.position = head.transform.position;
+        gameObject.transform.position = Vector3.Lerp(transform.position, head.transform.position, 0.05f);
     }
 }
