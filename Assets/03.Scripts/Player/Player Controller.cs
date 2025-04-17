@@ -35,6 +35,12 @@ public class PlayerController : PortalTraveller
     
     public bool lockCursor;
     
+    public float yaw;
+    public float pitch;
+    float smoothYaw;
+    float smoothPitch;
+    bool disabled;
+    
     [Header("Animation")]
     public Animator animator;
     private void Start()
@@ -43,6 +49,11 @@ public class PlayerController : PortalTraveller
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
+
+        yaw = transform.eulerAngles.y;
+        pitch = mainCamera.transform.localEulerAngles.x;
+        smoothYaw = yaw;
+        smoothPitch = pitch;
         initialCameraRotation = mainCamera.transform.localRotation;
     }
 
@@ -50,6 +61,21 @@ public class PlayerController : PortalTraveller
     {
         UpdateMove();
         UpdateCameraAngle();
+        
+        if (Input.GetKeyDown (KeyCode.P)) {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            Debug.Break ();
+        }
+        if (Input.GetKeyDown (KeyCode.O)) {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            disabled = !disabled;
+        }
+
+        if (disabled) {
+            return;
+        }
     }
 
     private void UpdateMove()
@@ -103,7 +129,6 @@ public class PlayerController : PortalTraveller
 
         verticalLookRotation -= mouseY;
         verticalLookRotation = Mathf.Clamp(verticalLookRotation, pitchMinMax.x, pitchMinMax.y);
-        float angleInRadians = Mathf.Deg2Rad * verticalLookRotation;
 
         Quaternion pitchRotation = Quaternion.AngleAxis(verticalLookRotation, Vector3.right);
         head.localRotation = initialCameraRotation * pitchRotation;
@@ -117,6 +142,11 @@ public class PlayerController : PortalTraveller
     
     public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
         transform.position = pos;
+        Vector3 eulerRot = rot.eulerAngles;
+        float delta = Mathf.DeltaAngle (smoothYaw, eulerRot.y);
+        yaw += delta;
+        smoothYaw += delta;
+        transform.eulerAngles = Vector3.up * smoothYaw;
         velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
         Physics.SyncTransforms ();
     }
