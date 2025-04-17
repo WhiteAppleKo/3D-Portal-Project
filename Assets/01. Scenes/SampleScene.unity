@@ -565,7 +565,7 @@ MonoBehaviour:
   target: {fileID: 111028795}
   targetSwitchSmoothTime: 0.5
   weightSmoothTime: 0.5
-  smoothTurnTowardsTarget: 1
+  smoothTurnTowardsTarget: 0
   maxRadiansDelta: 3
   maxMagnitudeDelta: 3
   slerpSpeed: 3

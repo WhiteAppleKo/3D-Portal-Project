@@ -5,7 +5,7 @@ using RootMotion.FinalIK;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : PortalTraveller
 {
     private static readonly int MOVE_X = Animator.StringToHash("MoveX");
     private static readonly int MOVE_Z = Animator.StringToHash("MoveZ");
@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [Header("Player Movement")]
     public float walkSpeed = 1f;
     public float runSpeed = 2f;
+    public float smoothMoveTime = 0.1f;
     public float jumpForce = 2f;
     public CharacterController controller;
     private Vector3 velocity;
@@ -22,9 +23,9 @@ public class PlayerController : MonoBehaviour
     
     [Header("Camera Movement")]
     public float mouseSensitivity = 15f;
-    public float minY = -40f;
-    public float maxY = 50f;
+    public Vector2 pitchMinMax = new Vector2 (-40, 50);
     public Camera mainCamera;
+    public float rotationSmoothTime = 0.1f;
     private float verticalLookRotation = 0f;
     private float horizontalLookRotation = 0f;
     private Quaternion initialCameraRotation;
@@ -32,10 +33,16 @@ public class PlayerController : MonoBehaviour
     public Transform head;
     private float r;
     
+    public bool lockCursor;
+    
     [Header("Animation")]
     public Animator animator;
     private void Start()
     {
+        if (lockCursor) {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
         initialCameraRotation = mainCamera.transform.localRotation;
     }
 
@@ -95,7 +102,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation *= yawRotation;
 
         verticalLookRotation -= mouseY;
-        verticalLookRotation = Mathf.Clamp(verticalLookRotation, minY, maxY);
+        verticalLookRotation = Mathf.Clamp(verticalLookRotation, pitchMinMax.x, pitchMinMax.y);
         float angleInRadians = Mathf.Deg2Rad * verticalLookRotation;
 
         Quaternion pitchRotation = Quaternion.AngleAxis(verticalLookRotation, Vector3.right);
@@ -106,5 +113,11 @@ public class PlayerController : MonoBehaviour
         //
         // Vector3 pos = mainCamera.transform.localPosition + Vector3.up * result;
         // mainCamera.transform.localPosition.y = Mathf.Clamp(verticalLookRotation, minY, maxY);
+    }
+    
+    public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
+        transform.position = pos;
+        velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
+        Physics.SyncTransforms ();
     }
 }
