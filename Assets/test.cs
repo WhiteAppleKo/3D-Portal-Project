@@ -7,6 +7,6 @@ public class test : MonoBehaviour
     public GameObject camera;
     void Update()
     {
-        transform.position = camera.transform.forward * 20;
+        transform.position = camera.transform.forward * 2;
     }
 }

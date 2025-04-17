@@ -71,20 +71,32 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateCameraAngle()
     {
+        // float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
+        // float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
+        //
+        // horizontalLookRotation += mouseX;
+        // verticalLookRotation -= mouseY;
+        // verticalLookRotation = Mathf.Clamp(verticalLookRotation, minY, maxY);
+        //
+        // Vector3 rotation = new Vector3(verticalLookRotation, horizontalLookRotation, 0f);
+        // Quaternion targetRotation = Quaternion.Euler(rotation);
+        //
+        // // 부드러운 회전 적용 (Lerp 또는 Slerp 사용)
+        // mainCamera.transform.localRotation = Quaternion.Slerp(initialCameraRotation, targetRotation, Time.deltaTime * rotationSpeed);
+        //
+        // // currentRotation 업데이트 (현재 회전 상태 저장)
+        // initialCameraRotation = mainCamera.transform.localRotation;
+        
         float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-        
-        horizontalLookRotation += mouseX;
+
+        Quaternion yawRotation = Quaternion.AngleAxis(mouseX, Vector3.up);
+        transform.rotation *= yawRotation;
+
         verticalLookRotation -= mouseY;
         verticalLookRotation = Mathf.Clamp(verticalLookRotation, minY, maxY);
-        
-        Vector3 rotation = new Vector3(verticalLookRotation, horizontalLookRotation, 0f);
-        Quaternion targetRotation = Quaternion.Euler(rotation);
-        
-        // 부드러운 회전 적용 (Lerp 또는 Slerp 사용)
-        mainCamera.transform.localRotation = Quaternion.Slerp(initialCameraRotation, targetRotation, Time.deltaTime * rotationSpeed);
 
-        // currentRotation 업데이트 (현재 회전 상태 저장)
-        initialCameraRotation = mainCamera.transform.localRotation;
+        Quaternion pitchRotation = Quaternion.AngleAxis(verticalLookRotation, Vector3.right);
+        mainCamera.transform.localRotation = initialCameraRotation * pitchRotation;
     }
 }
