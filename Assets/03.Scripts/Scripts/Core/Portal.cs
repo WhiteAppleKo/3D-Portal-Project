@@ -47,6 +47,7 @@ public class Portal : MonoBehaviour {
                 var positionOld = travellerT.position;
                 var rotOld = travellerT.rotation;
                 traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
+                
                 traveller.graphicsClone.transform.SetPositionAndRotation (positionOld, rotOld);
                 // Can't rely on OnTriggerEnter/Exit to be called next frame since it depends on when FixedUpdate runs
                 linkedPortal.OnTravellerEnterPortal (traveller);
@@ -54,9 +55,10 @@ public class Portal : MonoBehaviour {
                 i--;
 
             } else {
-                traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), m.rotation);
-                //UpdateSliceParams (traveller);
-                traveller.previousOffsetFromPortal = offsetFromPortal;
+                var Rotation = traveller.graphicsObject.transform.rotation; 
+            traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), Rotation);
+            //UpdateSliceParams (traveller);
+            traveller.previousOffsetFromPortal = offsetFromPortal;
             }
         }
     }
