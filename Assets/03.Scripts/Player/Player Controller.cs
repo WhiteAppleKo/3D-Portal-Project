@@ -22,14 +22,15 @@ public class PlayerController : MonoBehaviour
     
     [Header("Camera Movement")]
     public float mouseSensitivity = 15f;
-    public float minY = -50f;
+    public float minY = -40f;
     public float maxY = 50f;
     public Camera mainCamera;
     private float verticalLookRotation = 0f;
     private float horizontalLookRotation = 0f;
     private Quaternion initialCameraRotation;
     private Vector3 rotation;
-    public float rotationSpeed = 10f;
+    public Transform head;
+    private float r;
     
     [Header("Animation")]
     public Animator animator;
@@ -95,8 +96,15 @@ public class PlayerController : MonoBehaviour
 
         verticalLookRotation -= mouseY;
         verticalLookRotation = Mathf.Clamp(verticalLookRotation, minY, maxY);
+        float angleInRadians = Mathf.Deg2Rad * verticalLookRotation;
 
         Quaternion pitchRotation = Quaternion.AngleAxis(verticalLookRotation, Vector3.right);
-        mainCamera.transform.localRotation = initialCameraRotation * pitchRotation;
+        head.localRotation = initialCameraRotation * pitchRotation;
+        // r * cos(a) 계산
+        //float result = r * Mathf.Cos(angleInRadians);
+        // Debug.Log($"result: {result}, r: {r}");
+        //
+        // Vector3 pos = mainCamera.transform.localPosition + Vector3.up * result;
+        // mainCamera.transform.localPosition.y = Mathf.Clamp(verticalLookRotation, minY, maxY);
     }
 }
