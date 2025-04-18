@@ -61,16 +61,37 @@ public class PortalTraveller : MonoBehaviour {
         }
     }
 
-    // 전달 받은 게임오브젝트를 포함한 하위 오브젝트들의 MeshRenderer를 배열로 반환하는 코드
-    Material[] GetMaterials (GameObject g) {
-        var renderers = g.GetComponentsInChildren<MeshRenderer> ();
-        // g와 그 자식 오브젝트들에서 MeshRenderer 컴포넌트를 찾아 배열 저장
-        var matList = new List<Material> ();
-        foreach (var renderer in renderers) {
+    Material[] GetMaterials(GameObject g) {
+        var matList = new List<Material>();
+
+        // MeshRenderer에서 머테리얼 가져오기
+        var meshRenderers = g.GetComponentsInChildren<MeshRenderer>();
+        foreach (var renderer in meshRenderers) {
             foreach (var mat in renderer.materials) {
-                matList.Add (mat);
+                matList.Add(mat);
             }
         }
-        return matList.ToArray ();
+
+        // SkinnedMeshRenderer에서 머테리얼 가져오기
+        var skinnedMeshRenderers = g.GetComponentsInChildren<SkinnedMeshRenderer>();
+        foreach (var renderer in skinnedMeshRenderers) {
+            foreach (var mat in renderer.materials) {
+                matList.Add(mat);
+            }
+        }
+
+        return matList.ToArray();
     }
+    // 전달 받은 게임오브젝트를 포함한 하위 오브젝트들의 MeshRenderer를 배열로 반환하는 코드
+    // Material[] GetMaterials (GameObject g) {
+    //     var renderers = g.GetComponentsInChildren<MeshRenderer> ();
+    //     // g와 그 자식 오브젝트들에서 MeshRenderer 컴포넌트를 찾아 배열 저장
+    //     var matList = new List<Material> ();
+    //     foreach (var renderer in renderers) {
+    //         foreach (var mat in renderer.materials) {
+    //             matList.Add (mat);
+    //         }
+    //     }
+    //     return matList.ToArray ();
+    // }
 }

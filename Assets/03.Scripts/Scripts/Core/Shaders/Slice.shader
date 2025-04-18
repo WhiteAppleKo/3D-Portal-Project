@@ -11,7 +11,7 @@
         // 슬라이스 방향
         sliceNormal("normal", Vector) = (0,0,0,0)
         // 슬라이스 중심점
-        sliceCentre ("centre", Vector) = (0,0,0,0)
+        sliceCentre ("centre", Vector) = (0,-1,-0.573,0)
         // 슬라이스 중심에서의 거리 오프셋
         sliceOffsetDst("offset", Float) = 0
     }
@@ -73,8 +73,6 @@
                 // 슬라이스 기준면의 양쪽에 있는지 판단하여 클리핑
                 clip(dot(offsetToSliceCentre, sliceNormal));
 
-                float sliceValue = dot(offsetToSliceCentre, sliceNormal);
-                return half4(sliceValue, sliceValue, sliceValue, 1.0);
                 // 기본 텍스처와 색상 적용
                 half4 c = tex2D(_MainTex, i.uv) * _Color;
 
