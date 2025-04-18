@@ -223,9 +223,12 @@ public class Portal : MonoBehaviour {
         Vector3 cloneSlicePos = linkedPortal.transform.position;
 
         // Adjust slice offset so that when player standing on other side of portal to the object, the slice doesn't clip through
-        float sliceOffsetDst = 0;
-        float cloneSliceOffsetDst = 0;
+        // float sliceOffsetDst = 0;
+        // float cloneSliceOffsetDst = 0;
+        // float screenThickness = screen.transform.localScale.z;
         float screenThickness = screen.transform.localScale.z;
+        float sliceOffsetDst = SameSideOfPortal(playerCam.transform.position, traveller.transform.position) ? 0 : -screenThickness;
+        float cloneSliceOffsetDst = linkedPortal.SameSideOfPortal(playerCam.transform.position, traveller.transform.position) ? 0 : -screenThickness;
 
         bool playerSameSideAsTraveller = SameSideOfPortal (playerCam.transform.position, traveller.transform.position);
         if (!playerSameSideAsTraveller) {
@@ -247,7 +250,6 @@ public class Portal : MonoBehaviour {
             traveller.cloneMaterials[i].SetFloat ("sliceOffsetDst", cloneSliceOffsetDst);
 
         }
-
     }
 
     // Use custom projection matrix to align portal camera's near clip plane with the surface of the portal

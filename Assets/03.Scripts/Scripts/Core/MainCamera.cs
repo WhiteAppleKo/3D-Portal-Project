@@ -12,7 +12,7 @@ public class MainCamera : MonoBehaviour {
         portals = FindObjectsOfType<Portal> ();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         for (int i = 0; i < portals.Length; i++) {
             portals[i].PrePortalRender ();

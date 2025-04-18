@@ -11,7 +11,7 @@
         // 슬라이스 방향
         sliceNormal("normal", Vector) = (0,0,0,0)
         // 슬라이스 중심점
-        sliceCentre ("centre", Vector) = (0,-1,-0.573,0)
+        sliceCentre ("centre", Vector) = (0,0,0,0)
         // 슬라이스 중심에서의 거리 오프셋
         sliceOffsetDst("offset", Float) = 0
     }
