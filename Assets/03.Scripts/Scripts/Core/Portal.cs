@@ -56,7 +56,9 @@ public class Portal : MonoBehaviour {
 
             } else {
                 var Rotation = traveller.graphicsObject.transform.rotation; 
-            traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), Rotation);
+                Vector3 newPosition = m.GetColumn(3);
+                newPosition.y = traveller.graphicsObject.transform.position.y;
+            traveller.graphicsClone.transform.SetPositionAndRotation (newPosition, Rotation);
             //UpdateSliceParams (traveller);
             traveller.previousOffsetFromPortal = offsetFromPortal;
             }

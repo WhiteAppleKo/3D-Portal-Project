@@ -69,10 +69,12 @@
                 // 슬라이스 처리: 중심점에 오프셋을 적용
                 float3 adjustedCentre = sliceCentre + sliceNormal * sliceOffsetDst;
                 float3 offsetToSliceCentre = adjustedCentre - i.worldPos;
-
+                
                 // 슬라이스 기준면의 양쪽에 있는지 판단하여 클리핑
                 clip(dot(offsetToSliceCentre, sliceNormal));
 
+                float sliceValue = dot(offsetToSliceCentre, sliceNormal);
+                return half4(sliceValue, sliceValue, sliceValue, 1.0);
                 // 기본 텍스처와 색상 적용
                 half4 c = tex2D(_MainTex, i.uv) * _Color;
 
