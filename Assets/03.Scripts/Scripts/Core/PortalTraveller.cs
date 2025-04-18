@@ -5,6 +5,7 @@ public class PortalTraveller : MonoBehaviour {
 
     public GameObject graphicsObject;
     public GameObject graphicsClone { get; set; }
+    private string layerNmae = "Clone";
     public Vector3 previousOffsetFromPortal { get; set; }
 
     public Material[] originalMaterials { get; set; }
@@ -20,6 +21,14 @@ public class PortalTraveller : MonoBehaviour {
         if (graphicsClone == null) {
             // 그래픽클론이 없다면
             graphicsClone = Instantiate (graphicsObject);
+            //graphicsClone.layer = LayerMask.NameToLayer (layerNmae);
+            void SetLayerRecursively(GameObject obj, int newLayer) {
+                obj.layer = newLayer;
+                foreach (Transform child in obj.transform) {
+                    SetLayerRecursively(child.gameObject, newLayer);
+                }
+            }
+            SetLayerRecursively(graphicsClone, LayerMask.NameToLayer(layerNmae));
             // 클론 생성
             graphicsClone.transform.parent = graphicsObject.transform.parent;
             // 클론오브젝트의 부모를 원본의 부모와 동일하게 설정
