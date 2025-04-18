@@ -21,6 +21,7 @@ public class PortalGun : MonoBehaviour
         {
             laser.SetActive(true);
             portalIndex = 0;
+            portals[portalIndex].SetActive(false);
             Fire(portalIndex);
             currentFireRate = 0f;
         }
@@ -29,6 +30,7 @@ public class PortalGun : MonoBehaviour
         {
             laser.SetActive(true);
             portalIndex = 1;
+            portals[portalIndex].SetActive(false);
             Fire(portalIndex);
             currentFireRate = 0f;
         }
@@ -43,8 +45,9 @@ public class PortalGun : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
+            portals[portalIndex].SetActive(true);
             Debug.Log("Hit Object: " + hit.collider.gameObject.name);
-            Vector3 spawnPosition = hit.point + hit.normal;
+            Vector3 spawnPosition = hit.point;
             Quaternion spawnRotation = Quaternion.LookRotation(hit.normal);
             portals[portalIndex].transform.position = spawnPosition;
             portals[portalIndex].transform.rotation = spawnRotation;
