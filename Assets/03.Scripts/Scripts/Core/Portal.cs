@@ -43,24 +43,27 @@ public class Portal : MonoBehaviour {
             int portalSide = System.Math.Sign (Vector3.Dot (offsetFromPortal, transform.forward));
             int portalSideOld = System.Math.Sign (Vector3.Dot (traveller.previousOffsetFromPortal, transform.forward));
             // Teleport the traveller if it has crossed from one side of the portal to the other
-            if (portalSide != portalSideOld) {
+            // **변경된 부분**: Y축 방향 판정을 추가
+            int portalSideY = System.Math.Sign(offsetFromPortal.y);
+            int portalSideYOld = System.Math.Sign(traveller.previousOffsetFromPortal.y);
+            
+            if (portalSide != portalSideOld || portalSideY != portalSideYOld) { // **변경된 부분**
                 var positionOld = travellerT.position;
                 var rotOld = travellerT.rotation;
-                traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
-                
-                traveller.graphicsClone.transform.SetPositionAndRotation (positionOld, rotOld);
-                // Can't rely on OnTriggerEnter/Exit to be called next frame since it depends on when FixedUpdate runs
-                linkedPortal.OnTravellerEnterPortal (traveller);
-                trackedTravellers.RemoveAt (i);
+                traveller.Teleport(transform, linkedPortal.transform, m.GetColumn(3), m.rotation);
+
+                traveller.graphicsClone.transform.SetPositionAndRotation(positionOld, rotOld);
+                linkedPortal.OnTravellerEnterPortal(traveller);
+                trackedTravellers.RemoveAt(i);
                 i--;
 
             } else {
                 var Rotation = traveller.graphicsObject.transform.rotation; 
                 Vector3 newPosition = m.GetColumn(3);
-                newPosition.y = traveller.graphicsObject.transform.position.y;
-            traveller.graphicsClone.transform.SetPositionAndRotation (newPosition, Rotation);
-            //UpdateSliceParams (traveller);
-            traveller.previousOffsetFromPortal = offsetFromPortal;
+                newPosition.y = traveller.graphicsObject.transform.position.y; 
+                traveller.graphicsClone.transform.SetPositionAndRotation (newPosition, Rotation); 
+                //UpdateSliceParams (traveller);
+                traveller.previousOffsetFromPortal = offsetFromPortal;
             }
         }
     }
