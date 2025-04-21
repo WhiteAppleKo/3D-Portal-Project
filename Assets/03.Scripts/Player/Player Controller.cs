@@ -89,7 +89,10 @@ public class PlayerController : PortalTraveller
         
         // Vector3 move = transform.right * moveX + transform.forward * moveZ;
         // controller.Move(move * (speed * Time.deltaTime));
-
+        
+        // 마찰력 적용
+        velocity.x *= 0.98f; // X축 감속
+        velocity.z *= 0.98f; // Z축 감속
         
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
@@ -147,7 +150,11 @@ public class PlayerController : PortalTraveller
         yaw += delta;
         smoothYaw += delta;
         transform.eulerAngles = Vector3.up * smoothYaw;
+        // 운동량 변환
         velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
+        
+        // 유니티에서 물리 엔진과 트랜스폼간의 데이터를 동기화 시킴
+        // 트랜스폼이 변경되었을 때 즉시 동기화되지 않는 문제
         Physics.SyncTransforms ();
     }
 }
