@@ -41,6 +41,12 @@ public class Portal : MonoBehaviour {
 
         for (int i = 0; i < trackedTravellers.Count; i++) {
             PortalTraveller traveller = trackedTravellers[i];
+            if (traveller == null)
+            {
+                trackedTravellers.RemoveAt (i);
+                i--;
+                continue;
+            }
             Transform travellerT = traveller.transform;
             var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * travellerT.localToWorldMatrix;
 
