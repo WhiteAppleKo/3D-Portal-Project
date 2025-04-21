@@ -12,6 +12,9 @@ public class Portal : MonoBehaviour {
     public float nearClipOffset = 0.05f;
     public float nearClipLimit = 0.2f;
 
+    // "Wall" 레이어와 "Player" 레이어 간 충돌 무시 설정
+    private int wallLayer;
+    private int playerLayer;
     // Private variables
     RenderTexture viewTexture;
     Camera portalCam;
@@ -26,6 +29,8 @@ public class Portal : MonoBehaviour {
         trackedTravellers = new List<PortalTraveller> ();
         screenMeshFilter = screen.GetComponent<MeshFilter> ();
         screen.material.SetInt ("displayMask", 1);
+        playerLayer = LayerMask.NameToLayer("Player");
+        wallLayer = LayerMask.NameToLayer("Wall");
     }
 
     void LateUpdate () {
@@ -279,12 +284,15 @@ public class Portal : MonoBehaviour {
         }
     }
 
-    void OnTravellerEnterPortal (PortalTraveller traveller) {
+    void OnTravellerEnterPortal (PortalTraveller traveller)
+    {
+        int travellerLayer = traveller.gameObject.layer;
         if (!trackedTravellers.Contains (traveller)) {
             traveller.EnterPortalThreshold ();
             traveller.previousOffsetFromPortal = traveller.transform.position - transform.position;
             trackedTravellers.Add (traveller);
         }
+        Physics.IgnoreLayerCollision(wallLayer, travellerLayer, true);
     }
 
     void OnTriggerEnter (Collider other) {
@@ -296,10 +304,12 @@ public class Portal : MonoBehaviour {
 
     void OnTriggerExit (Collider other) {
         var traveller = other.GetComponent<PortalTraveller> ();
+        int travellerLayer = traveller.gameObject.layer;
         if (traveller && trackedTravellers.Contains (traveller)) {
             traveller.ExitPortalThreshold ();
-            trackedTravellers.Remove (traveller);
+            trackedTravellers.Remove(traveller);
         }
+        Physics.IgnoreLayerCollision(wallLayer, travellerLayer, false);
     }
 
     /*

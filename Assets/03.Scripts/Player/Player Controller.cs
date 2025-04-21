@@ -27,7 +27,6 @@ public class PlayerController : PortalTraveller
     public Camera mainCamera;
     public float rotationSmoothTime = 0.1f;
     private float verticalLookRotation = 0f;
-    private float horizontalLookRotation = 0f;
     private Quaternion initialCameraRotation;
     private Vector3 rotation;
     public Transform head;
@@ -108,22 +107,6 @@ public class PlayerController : PortalTraveller
 
     private void UpdateCameraAngle()
     {
-        // float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
-        // float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-        //
-        // horizontalLookRotation += mouseX;
-        // verticalLookRotation -= mouseY;
-        // verticalLookRotation = Mathf.Clamp(verticalLookRotation, minY, maxY);
-        //
-        // Vector3 rotation = new Vector3(verticalLookRotation, horizontalLookRotation, 0f);
-        // Quaternion targetRotation = Quaternion.Euler(rotation);
-        //
-        // // 부드러운 회전 적용 (Lerp 또는 Slerp 사용)
-        // mainCamera.transform.localRotation = Quaternion.Slerp(initialCameraRotation, targetRotation, Time.deltaTime * rotationSpeed);
-        //
-        // // currentRotation 업데이트 (현재 회전 상태 저장)
-        // initialCameraRotation = mainCamera.transform.localRotation;
-        
         float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
 
@@ -135,12 +118,6 @@ public class PlayerController : PortalTraveller
 
         Quaternion pitchRotation = Quaternion.AngleAxis(verticalLookRotation, Vector3.right);
         head.localRotation = initialCameraRotation * pitchRotation;
-        // r * cos(a) 계산
-        //float result = r * Mathf.Cos(angleInRadians);
-        // Debug.Log($"result: {result}, r: {r}");
-        //
-        // Vector3 pos = mainCamera.transform.localPosition + Vector3.up * result;
-        // mainCamera.transform.localPosition.y = Mathf.Clamp(verticalLookRotation, minY, maxY);
     }
     
     public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {

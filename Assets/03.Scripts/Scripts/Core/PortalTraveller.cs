@@ -41,6 +41,7 @@ public class PortalTraveller : MonoBehaviour {
             graphicsClone.SetActive (true);
             // 이미 그래픽클론이 존재한다면  새로 만들지 않고 활성화만 시켜줌
         }
+        
     }
 
     // 텔레포트를 포함에 포탈에 더이상 닿고있지 않을 때 실행

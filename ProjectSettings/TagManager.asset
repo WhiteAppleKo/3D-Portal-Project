@@ -32,7 +32,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - TeleportableObject
   - Wall
   - Clone
   - Player
