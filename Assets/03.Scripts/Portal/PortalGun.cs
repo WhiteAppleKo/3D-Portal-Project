@@ -1,18 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PortalGun : MonoBehaviour
 {
-    public Transform firePos;
-    public Transform aimTarget;
     public GameObject laser;
     public GameObject[] portals;
     
     private float fireRate = 0.5f;
     private float currentFireRate = 0f;
     private int portalIndex = 0;
+    private Ray ray;
+    private void Start()
+    {
+        
+    }
 
     void Update()
     {
@@ -39,12 +43,11 @@ public class PortalGun : MonoBehaviour
 
     private void Fire(int portalIndex)
     {
-        Vector3 direction = (aimTarget.position - firePos.position).normalized;  
-        Ray ray = new Ray(firePos.position, direction);
-        
         RaycastHit hit;
+        ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
         if (Physics.Raycast(ray, out hit))
         {
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Portal")) return;
             portals[portalIndex].SetActive(true);
             Debug.Log("Hit Object: " + hit.collider.gameObject.name);
             Vector3 spawnPosition = hit.point;

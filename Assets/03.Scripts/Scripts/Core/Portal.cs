@@ -48,6 +48,8 @@ public class Portal : MonoBehaviour {
                 continue;
             }
             Transform travellerT = traveller.transform;
+            // Traveller의 월드 좌표를 현재 포탈의 로컬 좌표로 변환하고
+            // Traveller의 현재 포털 로컬 좌표를 연결된 포탈의 월드 좌표로 변환
             var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * travellerT.localToWorldMatrix;
 
             Vector3 offsetFromPortal = travellerT.position - transform.position;
@@ -297,6 +299,7 @@ public class Portal : MonoBehaviour {
             traveller.EnterPortalThreshold ();
             traveller.previousOffsetFromPortal = traveller.transform.position - transform.position;
             trackedTravellers.Add (traveller);
+            Physics.IgnoreLayerCollision(wallLayer, travellerLayer, true);
         }
         Physics.IgnoreLayerCollision(wallLayer, travellerLayer, true);
     }
@@ -314,6 +317,7 @@ public class Portal : MonoBehaviour {
         if (traveller && trackedTravellers.Contains (traveller)) {
             traveller.ExitPortalThreshold ();
             trackedTravellers.Remove(traveller);
+            Physics.IgnoreLayerCollision(wallLayer, travellerLayer, false);
         }
         Physics.IgnoreLayerCollision(wallLayer, travellerLayer, false);
     }

@@ -15,11 +15,12 @@ public class PlayerController : PortalTraveller
     public float walkSpeed = 1f;
     public float runSpeed = 2f;
     public float smoothMoveTime = 0.1f;
-    public float jumpForce = 2f;
     public CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
     private readonly float gravity = -9.81f;
+    private int changeSpeed = 1;
+    private int changeJump = 1;
     
     [Header("Camera Movement")]
     public float mouseSensitivity = 15f;
@@ -42,6 +43,9 @@ public class PlayerController : PortalTraveller
     
     [Header("Animation")]
     public Animator animator;
+
+    public Camera rayCamera;
+    private RenderTexture renderTexture;
     private void Start()
     {
         if (lockCursor) {
@@ -54,12 +58,20 @@ public class PlayerController : PortalTraveller
         smoothYaw = yaw;
         smoothPitch = pitch;
         initialCameraRotation = mainCamera.transform.localRotation;
+        
+        renderTexture = new RenderTexture (Screen.width, Screen.height, 24);
+        rayCamera.targetTexture = renderTexture;
     }
 
     private void Update()
     {
         UpdateMove();
         UpdateCameraAngle();
+        if (Input.GetKeyDown(KeyCode.C)) // C 키를 눌러 색상 가져오기
+        {
+            Color color = GetPixelColorAtRayHit();
+            Debug.Log($"발 아래 픽셀 색상: {color}");
+        }
         
         if (Input.GetKeyDown (KeyCode.P)) {
             Cursor.lockState = CursorLockMode.None;
@@ -71,38 +83,41 @@ public class PlayerController : PortalTraveller
             Cursor.visible = true;
             disabled = !disabled;
         }
-
-        if (disabled) {
-            return;
-        }
     }
 
     private void UpdateMove()
     {
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
-        float moveX = Input.GetAxis("Horizontal") * speed;
-        float moveZ = Input.GetAxis("Vertical") * speed;
+        float moveX = Input.GetAxis("Horizontal") * speed * changeSpeed;
+        float moveZ = Input.GetAxis("Vertical") * speed * changeSpeed;
         
         animator.SetFloat(MOVE_X, moveX);
         animator.SetFloat(MOVE_Z, moveZ);
-        
-        // Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        // controller.Move(move * (speed * Time.deltaTime));
-        
+
+        Vector3 move;
+        if (moveZ < 0)
+        {
+            move = (transform.right * moveX + transform.forward * -1) * walkSpeed;
+        }
+        else
+        {
+            move = (transform.right * moveX + transform.forward * moveZ) * speed;
+        }
         // 마찰력 적용
-        velocity.x *= 0.98f; // X축 감속
-        velocity.z *= 0.98f; // Z축 감속
+        velocity.x = move.x;
+        velocity.z = move.z;
         
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        
 
         bool isGrounded = controller.isGrounded;
-        
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             animator.SetBool(JUMP, true);
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+            velocity.y = Mathf.Sqrt(-gravity * changeJump);
         }
+        
+        controller.Move(velocity * Time.deltaTime);
     }
 
     private void UpdateCameraAngle()
@@ -133,5 +148,59 @@ public class PlayerController : PortalTraveller
         // 유니티에서 물리 엔진과 트랜스폼간의 데이터를 동기화 시킴
         // 트랜스폼이 변경되었을 때 즉시 동기화되지 않는 문제
         Physics.SyncTransforms ();
+    }
+
+    public Color GetPixelColorAtRayHit()
+    {
+        /*
+         * 240 ~ 255
+         * 200 ~ 255
+         * 0   ~ 50
+         */
+        // 발 아래로 레이 쏘기
+        Ray ray = new Ray(rayCamera.transform.position, -Vector3.up);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            // RenderTexture를 Texture2D로 복사
+            RenderTexture.active = renderTexture;
+            Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+            texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            texture.Apply();
+            RenderTexture.active = null;
+            Debug.Log($"{texture.width}, {texture.height}");
+            // 충돌 지점을 스크린 좌표로 변환
+            Vector3 screenPoint = rayCamera.WorldToScreenPoint(hit.point);
+            Debug.Log($"충돌 지점: {screenPoint}");
+            int x = Mathf.Clamp((int)screenPoint.x, 0, texture.width - 1);
+            int y = Mathf.Clamp((int)screenPoint.y, 0, texture.height - 1);
+            Debug.Log($"{x}, {y}");
+
+            // 해당 좌표의 색상 가져오기
+            Color color = texture.GetPixel(x, y);
+
+            // 메모리 해제
+            Destroy(texture);
+            if (color.b >= 0 / 255f && color.b <= 50 / 255f)
+            {
+                changeSpeed = 10;
+            }
+            else
+            {
+                changeSpeed = 1;
+            }
+            
+            if (color.r >= 0 / 255f && color.r <= 50 / 255f)
+            {
+                changeJump = 10;
+            }
+            else
+            {
+                changeJump = 1;
+            }
+            return color;
+        }
+
+        Debug.Log("레이가 아무것도 맞추지 못했습니다.");
+        return Color.clear;
     }
 }
