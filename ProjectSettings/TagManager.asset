@@ -29,7 +29,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - ButtonTrigger
   - Bridge
   - PaintBall
   - TeleportableObject

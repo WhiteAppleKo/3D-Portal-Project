@@ -230,6 +230,7 @@ public class Portal : MonoBehaviour {
 
     void UpdateSliceParams (PortalTraveller traveller) {
         // Calculate slice normal
+        if (traveller == null) return;
         int side = SideOfPortal (traveller.transform.position);
         Vector3 sliceNormal = transform.forward * -side;
         Vector3 cloneSliceNormal = linkedPortal.transform.forward * side;

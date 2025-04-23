@@ -27,11 +27,11 @@ public class Bridge : MonoBehaviour
     }
     public void CreateBridges(RaycastHit hitInfo)
     {
-        if (hit.collider.gameObject.layer == LayerMask.NameToLayer($"Bridge")) return;
-        Transform hitTransform = hit.transform;
-        distance = Mathf.CeilToInt(Vector3.Distance(transform.position, hit.point));
+        if (hitInfo.collider.gameObject.layer == LayerMask.NameToLayer($"Bridge")) return;
+        Transform hitTransform = hitInfo.transform;
+        distance = Mathf.CeilToInt(Vector3.Distance(transform.position, hitInfo.point));
         Vector3 position = transform.localPosition;
-        Vector3 direction = (hit.point - transform.position).normalized;
+        Vector3 direction = (hitInfo.point - transform.position).normalized;
         for (int i = 0; i < distance; i++)
         {
             position += direction;
