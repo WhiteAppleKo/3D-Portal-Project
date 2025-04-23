@@ -5,32 +5,62 @@ using UnityEngine;
 
 public class CreateBridge : Bridge
 {
-    public GameObject bridgeTile;
-    public float count = 0;
-    public Ray ray;
-    public RaycastHit hit;
-
-    public bool rayCast(out RaycastHit hitInfo)
+    public GameObject bridgeCreatorClone;
+    private GameObject clone;
+    
+    private new void Awake()
     {
-        if (Physics.Raycast(ray, out hitInfo))
-        {
-            hit = hitInfo; // 클래스 멤버 변수에 저장
-            return true;   // 레이캐스트 성공
-        }
-        return false;      // 레이캐스트 실패
+        ray = new Ray(transform.position, transform.forward);
+        CreateBridgeClone();
     }
-    public void CreateBridges()
+
+    private void OnEnable()
     {
-        if (rayCast(out hit))
+        PortalGun.OnFire += HandlePortalFire;
+    }
+    
+    private void OnDisble()
+    {
+        PortalGun.OnFire -= HandlePortalFire;
+    }
+
+    private void HandlePortalFire(int portalIndex)
+    {
+        StartCoroutine(HandleBridgeCreation());
+    }
+    
+    private IEnumerator HandleBridgeCreation()
+    {
+        ClearBridges();
+        if (clone != null)
         {
-            if (hit.collider.gameObject.layer == LayerMask.NameToLayer($"Bridge")) return;
-            Transform hitTransform = hit.transform;
-            count = hitTransform.position.z - transform.position.z;
-            Vector3 position = transform.position;
-            for (int i = 0; i < count; i++)
+            clone.GetComponent<Bridge>().ClearBridges();
+        }
+        Destroy(clone);
+        yield return null; // 한 프레임 대기
+        CreateBridgeClone();
+    }
+    public void CreateBridgeClone()
+    {
+        if (rayCast(ray, out hit, ~0))
+        {
+            Debug.Log($"Hit Point: {hit.point}, Hit Object: {hit.collider.gameObject.name}");
+            CreateBridges(hit);
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Portal"))
             {
-                position.z += 1f;
-                Instantiate(bridgeTile, position, Quaternion.identity);
+                if(clone != null) Destroy(clone);
+                
+                // 충돌한 포탈
+                Transform portalTransform = hit.collider.transform;
+                // 현재 포탈의 로컬 좌표를 반대편 포탈의 월드 좌표로 변환
+                Vector3 localPosition = portalTransform.InverseTransformPoint(hit.point); // 충돌 지점의 로컬 좌표
+                Transform linkedPortalTransform = hit.collider.gameObject.GetComponent<Portal>().linkedPortal.transform;
+                Vector3 linkedPortalPosition = linkedPortalTransform.TransformPoint(localPosition);
+                
+                // 반대편 포탈의 위치에 클론 생성
+                clone = Instantiate(bridgeCreatorClone, linkedPortalPosition, Quaternion.identity);
+                clone.transform.rotation = linkedPortalTransform.rotation;
+                clone.SetActive(true);
             }
         }
     }

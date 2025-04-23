@@ -13,11 +13,14 @@ public class PortalGun : MonoBehaviour
     private float currentFireRate = 0f;
     private int portalIndex = 0;
     private Ray ray;
-    private void Start()
+    
+    // 이벤트 선언
+    public static event Action<int> OnFire;
+
+    public void FireEvents()
     {
         
     }
-
     void Update()
     {
         currentFireRate += Time.deltaTime;
@@ -57,5 +60,6 @@ public class PortalGun : MonoBehaviour
             
         }
         laser.SetActive(false);
+        OnFire?.Invoke(portalIndex);
     }
 }
