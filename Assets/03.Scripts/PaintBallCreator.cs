@@ -9,10 +9,20 @@ public class PaintBallCreator : MonoBehaviour
     public WaitForSeconds wait;
     public float spawnTime = 0.5f;
     public int selectPaintBall;
+
     private void Start()
     {
         wait = new WaitForSeconds(spawnTime);
+    }
+
+    private void OnEnable()
+    {
         StartCoroutine(createPaintBall(paintBallPrefabs[selectPaintBall]));
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine(createPaintBall(paintBallPrefabs[selectPaintBall]));
     }
 
     private IEnumerator createPaintBall(GameObject paintBall)

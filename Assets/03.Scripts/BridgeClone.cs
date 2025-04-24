@@ -16,7 +16,7 @@ public class BridgeClone : Bridge
         
         CloneCreateBridge();
     }
-    
+
     public void CloneCreateBridge()
     {
         ClearBridges();

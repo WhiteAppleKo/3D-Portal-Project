@@ -1,8 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Portal : MonoBehaviour {
+    
+    // 이벤트 선언
+    public static event Action<Portal> OnEnablePortal;
+    public static event Action<Portal> OnDisablePortal;
+    
     [Header ("Main Settings")]
     public Portal linkedPortal;
     public MeshRenderer screen;
@@ -31,14 +37,60 @@ public class Portal : MonoBehaviour {
         screen.material.SetInt ("displayMask", 1);
         playerLayer = LayerMask.NameToLayer("Player");
         wallLayer = LayerMask.NameToLayer("Wall");
+        OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
+    }
+    
+    void DisableScreenShadows()
+    {
+        // Disable shadows on the screen
+        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    }
+
+    private void OnEnable()
+    {
+        DisableScreenShadows();
+        OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
+    }
+
+    private void OnDisable()
+    {
+        OnDisablePortal?.Invoke(gameObject.GetComponent<Portal>());
     }
 
     void LateUpdate () {
         HandleTravellers ();
     }
 
+    // void HandleTravellers () {
+    //
+    //     for (int i = 0; i < trackedTravellers.Count; i++) {
+    //         PortalTraveller traveller = trackedTravellers[i];
+    //         Transform travellerT = traveller.transform;
+    //         var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * travellerT.localToWorldMatrix;
+    //
+    //         Vector3 offsetFromPortal = travellerT.position - transform.position;
+    //         int portalSide = System.Math.Sign (Vector3.Dot (offsetFromPortal, transform.forward));
+    //         int portalSideOld = System.Math.Sign (Vector3.Dot (traveller.previousOffsetFromPortal, transform.forward));
+    //         // Teleport the traveller if it has crossed from one side of the portal to the other
+    //         if (portalSide != portalSideOld) {
+    //             var positionOld = travellerT.position;
+    //             var rotOld = travellerT.rotation;
+    //             traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
+    //             traveller.graphicsClone.transform.SetPositionAndRotation (positionOld, rotOld);
+    //             // Can't rely on OnTriggerEnter/Exit to be called next frame since it depends on when FixedUpdate runs
+    //             linkedPortal.OnTravellerEnterPortal (traveller);
+    //             trackedTravellers.RemoveAt (i);
+    //             i--;
+    //
+    //         } else {
+    //             traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), m.rotation);
+    //             //UpdateSliceParams (traveller);
+    //             traveller.previousOffsetFromPortal = offsetFromPortal;
+    //         }
+    //     }
+    // }
     void HandleTravellers () {
-
+    
         for (int i = 0; i < trackedTravellers.Count; i++) {
             PortalTraveller traveller = trackedTravellers[i];
             if (traveller == null)
@@ -51,25 +103,25 @@ public class Portal : MonoBehaviour {
             // Traveller의 월드 좌표를 현재 포탈의 로컬 좌표로 변환하고
             // Traveller의 현재 포털 로컬 좌표를 연결된 포탈의 월드 좌표로 변환
             var m = linkedPortal.transform.localToWorldMatrix * (transform.worldToLocalMatrix * travellerT.localToWorldMatrix);
-
+    
             Vector3 offsetFromPortal = travellerT.position - transform.position;
             int portalSide = System.Math.Sign (Vector3.Dot (offsetFromPortal, transform.forward));
             int portalSideOld = System.Math.Sign (Vector3.Dot (traveller.previousOffsetFromPortal, transform.forward));
             // Teleport the traveller if it has crossed from one side of the portal to the other
             // **변경된 부분**: Y축 방향 판정을 추가
-            int portalSideY = System.Math.Sign(offsetFromPortal.y);
-            int portalSideYOld = System.Math.Sign(traveller.previousOffsetFromPortal.y);
+            //int portalSideY = System.Math.Sign(Vector3.Dot (offsetFromPortal, transform.up));
+            //int portalSideYOld = System.Math.Sign(Vector3.Dot (traveller.previousOffsetFromPortal, transform.up));
             
-            if (portalSide != portalSideOld || portalSideY != portalSideYOld) { // **변경된 부분**
+            if (portalSide != portalSideOld) { // **변경된 부분**
                 var positionOld = travellerT.position;
                 var rotOld = travellerT.rotation;
                 traveller.Teleport(transform, linkedPortal.transform, m.GetColumn(3), m.rotation);
-
+    
                 traveller.graphicsClone.transform.SetPositionAndRotation(positionOld, rotOld);
                 linkedPortal.OnTravellerEnterPortal(traveller);
                 trackedTravellers.RemoveAt(i);
                 i--;
-
+    
             } else {
                 var Rotation = traveller.graphicsObject.transform.rotation; 
                 Vector3 newPosition = m.GetColumn(3);
@@ -122,7 +174,7 @@ public class Portal : MonoBehaviour {
         }
 
         // Hide screen so that camera can see through portal
-        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        //screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         linkedPortal.screen.material.SetInt ("displayMask", 0);
 
         for (int i = startIndex; i < recursionLimit; i++) {
@@ -137,7 +189,7 @@ public class Portal : MonoBehaviour {
         }
 
         // Unhide objects hidden at start of render
-        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        //screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
     }
 
     void HandleClipping () {
@@ -172,6 +224,7 @@ public class Portal : MonoBehaviour {
 
         var offsetFromPortalToCam = portalCamPos - transform.position;
         foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
+            if(linkedTraveller == null) continue;
             var travellerPos = linkedTraveller.graphicsObject.transform.position;
             var clonePos = linkedTraveller.graphicsClone.transform.position;
             // Handle clone of linked portal coming through this portal:

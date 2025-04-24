@@ -39,13 +39,16 @@ public class PlayerController : PortalTraveller
     public float pitch;
     float smoothYaw;
     float smoothPitch;
-    bool disabled;
     
     [Header("Animation")]
     public Animator animator;
 
     public Camera rayCamera;
     private RenderTexture renderTexture;
+    private Texture2D reusableTexture;
+    public Transform cubeTransform;
+    private GameObject cube;
+    private Rigidbody rb;
     private void Start()
     {
         if (lockCursor) {
@@ -73,15 +76,19 @@ public class PlayerController : PortalTraveller
             Debug.Log($"발 아래 픽셀 색상: {color}");
         }
         
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            // 큐브를 잡는 기능
+            PickUpCube();
+        }
+        
         if (Input.GetKeyDown (KeyCode.P)) {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            Debug.Break ();
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
         if (Input.GetKeyDown (KeyCode.O)) {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            disabled = !disabled;
         }
     }
 
@@ -107,17 +114,34 @@ public class PlayerController : PortalTraveller
         velocity.x = move.x;
         velocity.z = move.z;
         
-        velocity.y += gravity * Time.deltaTime;
-        
-
-        bool isGrounded = controller.isGrounded;
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        isGrounded = controller.isGrounded;
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             animator.SetBool(JUMP, true);
-            velocity.y = Mathf.Sqrt(-gravity * changeJump);
+            UpdateJump(true);
+        }
+        else
+        {
+            UpdateJump(false);
         }
         
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void UpdateJump(bool isJumping)
+    {
+        if (isGrounded == false)
+        {
+            velocity.y += gravity * Time.deltaTime;
+        }
+        else
+        {
+            velocity.y = 0;
+        }
+        if(isJumping)
+        {
+            velocity.y = Mathf.Sqrt(-gravity * 3f * changeJump);
+        }
     }
 
     private void UpdateCameraAngle()
@@ -142,13 +166,21 @@ public class PlayerController : PortalTraveller
         yaw += delta;
         smoothYaw += delta;
         transform.eulerAngles = Vector3.up * smoothYaw;
-        // 운동량 변환
         velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
-        
-        // 유니티에서 물리 엔진과 트랜스폼간의 데이터를 동기화 시킴
-        // 트랜스폼이 변경되었을 때 즉시 동기화되지 않는 문제
         Physics.SyncTransforms ();
     }
+    // public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
+    //     transform.position = pos;
+    //     Debug.Log(pos);
+    //     Vector3 eulerRot = rot.eulerAngles;
+    //     float delta = Mathf.DeltaAngle (smoothYaw, eulerRot.y);
+    //     yaw += delta;
+    //     smoothYaw += delta;
+    //     transform.eulerAngles = Vector3.up * smoothYaw;
+    //     // 운동량 변환
+    //     velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
+    //     Physics.SyncTransforms ();
+    // }
 
     public Color GetPixelColorAtRayHit()
     {
@@ -158,28 +190,28 @@ public class PlayerController : PortalTraveller
          * 0   ~ 50
          */
         // 발 아래로 레이 쏘기
+        if (reusableTexture == null)
+        {
+            reusableTexture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+        }
         Ray ray = new Ray(rayCamera.transform.position, -Vector3.up);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             // RenderTexture를 Texture2D로 복사
             RenderTexture.active = renderTexture;
-            Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
-            texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-            texture.Apply();
+            reusableTexture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            reusableTexture.Apply();
             RenderTexture.active = null;
-            Debug.Log($"{texture.width}, {texture.height}");
+            
             // 충돌 지점을 스크린 좌표로 변환
             Vector3 screenPoint = rayCamera.WorldToScreenPoint(hit.point);
-            Debug.Log($"충돌 지점: {screenPoint}");
-            int x = Mathf.Clamp((int)screenPoint.x, 0, texture.width - 1);
-            int y = Mathf.Clamp((int)screenPoint.y, 0, texture.height - 1);
+            int x = Mathf.Clamp((int)screenPoint.x, 0, reusableTexture.width - 1);
+            int y = Mathf.Clamp((int)screenPoint.y, 0, reusableTexture.height - 1);
             Debug.Log($"{x}, {y}");
 
             // 해당 좌표의 색상 가져오기
-            Color color = texture.GetPixel(x, y);
-
-            // 메모리 해제
-            Destroy(texture);
+            Color color = reusableTexture.GetPixel(x, y);
+            
             if (color.b >= 0 / 255f && color.b <= 50 / 255f)
             {
                 changeSpeed = 10;
@@ -202,5 +234,32 @@ public class PlayerController : PortalTraveller
 
         Debug.Log("레이가 아무것도 맞추지 못했습니다.");
         return Color.clear;
+    }
+
+    private void PickUpCube()
+    {
+        if (cube == null)
+        {
+            Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.collider.gameObject.CompareTag("Cube"))
+                {
+                    cube = hit.collider.gameObject; // cube 변수에 할당
+                    cube.transform.SetParent(cubeTransform); // cubeTransform의 자식으로 설정
+                    cube.transform.localPosition = Vector3.zero;
+                    rb = hit.collider.gameObject.GetComponent<Rigidbody>();
+                    rb.useGravity = false;
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+                }
+            }
+        }
+        else
+        {
+            rb.useGravity = true;
+            rb.constraints = RigidbodyConstraints.None;
+            cube.transform.SetParent(null); // 부모-자식 관계 해제
+            cube = null; // cube 변수를 null로 초기화
+        }
     }
 }

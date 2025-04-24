@@ -13,9 +13,12 @@ public class ButtonTrigger : MonoBehaviour
         Debug.Log(other.gameObject.name);
         if (other.gameObject.name == "ButtonTrigger")
         {
-            for (int i = 0; i < obj.Length; i++)
+            foreach (var item in obj)
             {
-                obj[i].SetActive(true);
+                if (!item.activeSelf) // 이미 활성화된 경우 호출하지 않음
+                {
+                    item.SetActive(true);
+                }
             }
         }
     }
@@ -24,9 +27,12 @@ public class ButtonTrigger : MonoBehaviour
     {
         if (other.gameObject.name == "ButtonTrigger")
         {
-            for (int i = 0; i < obj.Length; i++)
+            foreach (var item in obj)
             {
-                obj[i].SetActive(false);
+                if (item.activeSelf) // 이미 비활성화된 경우 호출하지 않음
+                {
+                    item.SetActive(false);
+                }
             }
         }
     }

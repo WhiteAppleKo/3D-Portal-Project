@@ -29,23 +29,23 @@ public class PortalGun : MonoBehaviour
     void Update()
     {
         currentFireRate += Time.deltaTime;
-        if (Input.GetKey(KeyCode.Mouse0) && currentFireRate > fireRate)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && currentFireRate > fireRate)
         {
+            currentFireRate = 0f;
             portalIndex = 0;
             portals[portalIndex].SetActive(false);
             Fire(portalIndex);
-            currentFireRate = 0f;
         }
         
-        if (Input.GetKey(KeyCode.Mouse1) && currentFireRate > fireRate)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && currentFireRate > fireRate)
         {
+            currentFireRate = 0f;
             portalIndex = 1;
             portals[portalIndex].SetActive(false);
             Fire(portalIndex);
-            currentFireRate = 0f;
         }
 
-        if (Input.GetKey(KeyCode.E) && currentFireRate > fireRate)
+        if (Input.GetKeyDown(KeyCode.R) && currentFireRate > fireRate)
         {
             FirePaintBall();
             currentFireRate = 0f;
@@ -68,7 +68,7 @@ public class PortalGun : MonoBehaviour
     {
         portals[portalIndex].SetActive(true);
         Debug.Log("Hit Object: " + hit.collider.gameObject.name);
-        Vector3 spawnPosition = hit.point;
+        Vector3 spawnPosition = hit.point + hit.normal * 0.5f;
         Quaternion spawnRotation = Quaternion.LookRotation(hit.normal);
         portals[portalIndex].transform.position = spawnPosition;
         portals[portalIndex].transform.rotation = spawnRotation;
@@ -98,10 +98,10 @@ public class PortalGun : MonoBehaviour
 
             // 해당 좌표의 색상 가져오기
             Color color = texture.GetPixel(x, y);
-
+            Debug.Log(color);
             // 메모리 해제
             Destroy(texture);
-            if (color.r <= 50 / 255f && color.b <= 50 / 255f)
+            if (color.r <= 50 / 255f && color.b <= 50 / 255f && color.g > 100 / 255f)
             {
                 CreatePortal(hit, portalIndex);
             }

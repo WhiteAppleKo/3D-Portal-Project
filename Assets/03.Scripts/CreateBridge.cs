@@ -7,21 +7,20 @@ public class CreateBridge : Bridge
 {
     public GameObject bridgeCreatorClone;
     private GameObject clone;
-    
-    private new void Awake()
-    {
-        ray = new Ray(transform.position, transform.forward);
-        CreateBridgeClone();
-    }
 
     private void OnEnable()
     {
         PortalGun.OnFire += HandlePortalFire;
+        ray = new Ray(transform.position, transform.forward);
+        CreateBridgeClone();
     }
     
-    private void OnDisble()
+    private void OnDisable()
     {
         PortalGun.OnFire -= HandlePortalFire;
+        clone.GetComponent<Bridge>().ClearBridges();
+        ClearBridges();
+        Destroy(clone);
     }
 
     private void HandlePortalFire(int portalIndex)
@@ -36,6 +35,7 @@ public class CreateBridge : Bridge
         {
             clone.GetComponent<Bridge>().ClearBridges();
         }
+        clone.GetComponent<Bridge>().ClearBridges();
         Destroy(clone);
         yield return null; // 한 프레임 대기
         CreateBridgeClone();
