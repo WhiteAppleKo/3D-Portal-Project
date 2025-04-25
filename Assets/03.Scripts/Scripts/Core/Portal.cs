@@ -37,18 +37,12 @@ public class Portal : MonoBehaviour {
         screen.material.SetInt ("displayMask", 1);
         playerLayer = LayerMask.NameToLayer("Player");
         wallLayer = LayerMask.NameToLayer("Wall");
-        OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
+        //OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
     }
     
-    void DisableScreenShadows()
-    {
-        // Disable shadows on the screen
-        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-    }
 
     private void OnEnable()
     {
-        DisableScreenShadows();
         OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
     }
 
@@ -174,7 +168,7 @@ public class Portal : MonoBehaviour {
         }
 
         // Hide screen so that camera can see through portal
-        //screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         linkedPortal.screen.material.SetInt ("displayMask", 0);
 
         for (int i = startIndex; i < recursionLimit; i++) {
@@ -189,7 +183,7 @@ public class Portal : MonoBehaviour {
         }
 
         // Unhide objects hidden at start of render
-        //screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
 
     void HandleClipping () {
