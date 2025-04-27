@@ -29,18 +29,20 @@ public class PortalGun : MonoBehaviour
     void Update()
     {
         currentFireRate += Time.deltaTime;
-        if (Input.GetKeyDown(KeyCode.Mouse0) && currentFireRate > fireRate)
+        if (Input.GetKeyDown(KeyCode.Alpha1) && currentFireRate > fireRate)
         {
             currentFireRate = 0f;
             portalIndex = 0;
+            portals[portalIndex].transform.SetParent(gameObject.transform);
             portals[portalIndex].SetActive(false);
             Fire(portalIndex);
         }
         
-        if (Input.GetKeyDown(KeyCode.Mouse1) && currentFireRate > fireRate)
+        if (Input.GetKeyDown(KeyCode.Alpha2) && currentFireRate > fireRate)
         {
             currentFireRate = 0f;
             portalIndex = 1;
+            portals[portalIndex].transform.SetParent(gameObject.transform);
             portals[portalIndex].SetActive(false);
             Fire(portalIndex);
         }
@@ -66,6 +68,7 @@ public class PortalGun : MonoBehaviour
 
     private void CreatePortal(RaycastHit hit, int portalIndex)
     {
+        portals[portalIndex].transform.SetParent(null);
         portals[portalIndex].SetActive(true);
         Debug.Log("Hit Object: " + hit.collider.gameObject.name);
         Vector3 spawnPosition = hit.point + hit.normal * 0.5f;
@@ -82,30 +85,10 @@ public class PortalGun : MonoBehaviour
         ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
         if (Physics.Raycast(ray, out hit))
         {
-            // RenderTexture를 Texture2D로 복사
-            RenderTexture.active = renderTexture;
-            Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
-            texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-            texture.Apply();
-            RenderTexture.active = null;
-            Debug.Log($"{texture.width}, {texture.height}");
-            // 충돌 지점을 스크린 좌표로 변환
-            Vector3 screenPoint = rayCamera.WorldToScreenPoint(hit.point);
-            Debug.Log($"충돌 지점: {screenPoint}");
-            int x = Mathf.Clamp((int)screenPoint.x, 0, texture.width - 1);
-            int y = Mathf.Clamp((int)screenPoint.y, 0, texture.height - 1);
-            Debug.Log($"{x}, {y}");
-
-            // 해당 좌표의 색상 가져오기
-            Color color = texture.GetPixel(x, y);
-            Debug.Log(color);
-            // 메모리 해제
-            Destroy(texture);
-            if (color.r <= 50 / 255f && color.b <= 50 / 255f && color.g > 100 / 255f)
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
             {
                 CreatePortal(hit, portalIndex);
             }
         }
-        Debug.Log("레이가 아무것도 맞추지 못했습니다.");
     }
 }

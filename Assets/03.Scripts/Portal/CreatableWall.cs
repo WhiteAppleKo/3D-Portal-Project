@@ -15,21 +15,15 @@ public class CreatableWall : MonoBehaviour
     }
 
     private PaintableWall[] paintableWalls;
-    private bool isLoaded = false;
     public GameObject[] walls;
     
 
     private void OnEnable()
     {
-        if (isLoaded == false)
-        {
-            LoadData();
-            isLoaded = true;
-        }
+        LoadData();
         
         if (paintableWalls == null)
         {
-            Debug.LogWarning("PaintableWalls array is null.");
             return;
         }
 
@@ -38,20 +32,22 @@ public class CreatableWall : MonoBehaviour
             if (paint.paintableMesh != null)
             {
                 paint.paintableMesh.enabled = true;
-                Debug.Log($"Enabled paintableMesh on {paint.paintableMesh.gameObject.name}");
             }
 
             if (paint.paintableTexture != null)
             {
                 paint.paintableTexture.enabled = true;
-                Debug.Log($"Enabled paintableTexture on {paint.paintableTexture.gameObject.name}");
             }
 
             if (paint.paintableColorCounter != null)
             {
                 paint.paintableColorCounter.enabled = true;
-                Debug.Log($"Enabled paintableColorCounter on {paint.paintableColorCounter.gameObject.name}");
             }
+        }
+        foreach (var item in walls)
+        {
+            item.SetActive(false);
+            item.SetActive(true);
         }
     }
 
@@ -59,7 +55,6 @@ public class CreatableWall : MonoBehaviour
     {
         if (paintableWalls == null)
         {
-            Debug.LogWarning("PaintableWalls array is null.");
             return;
         }
 
@@ -68,28 +63,25 @@ public class CreatableWall : MonoBehaviour
             if (paint.paintableMesh != null)
             {
                 paint.paintableMesh.enabled = false;
-                Debug.Log($"Disabled paintableMesh on {paint.paintableMesh.gameObject.name}");
             }
 
             if (paint.paintableTexture != null)
             {
                 paint.paintableTexture.enabled = false;
-                Debug.Log($"Disabled paintableTexture on {paint.paintableTexture.gameObject.name}");
             }
 
             if (paint.paintableColorCounter != null)
             {
                 paint.paintableColorCounter.enabled = false;
-                Debug.Log($"Disabled paintableColorCounter on {paint.paintableColorCounter.gameObject.name}");
             }
         }
+        paintableWalls = null;
     }
     
     private void LoadData()
     {
         if (walls == null || walls.Length == 0)
         {
-            Debug.LogWarning("Walls array is null or empty.");
             return;
         }
 
@@ -105,11 +97,6 @@ public class CreatableWall : MonoBehaviour
                 paintableWalls[i].paintableTexture == null ||
                 paintableWalls[i].paintableColorCounter == null)
             {
-                Debug.LogWarning($"One or more components are missing on wall {i}: {walls[i].name}");
-            }
-            else
-            {
-                Debug.Log($"Wall {i} initialized successfully: {walls[i].name}");
             }
         }
     }

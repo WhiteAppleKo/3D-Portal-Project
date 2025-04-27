@@ -5,7 +5,7 @@ using UnityEngine;
 public class ButtonTrigger : MonoBehaviour
 {
     public GameObject[] obj;
-
+    public int buttonNumber;
     private float a;
 
     private void OnTriggerEnter(Collider other)
@@ -18,6 +18,7 @@ public class ButtonTrigger : MonoBehaviour
                 if (!item.activeSelf) // 이미 활성화된 경우 호출하지 않음
                 {
                     item.SetActive(true);
+                    SceneChanger.Instance.isTestedButton(buttonNumber);
                 }
             }
         }

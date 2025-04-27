@@ -29,6 +29,7 @@ public class Portal : MonoBehaviour {
     List<PortalTraveller> trackedTravellers;
     MeshFilter screenMeshFilter;
 
+    private bool isAdded = false;
     void Awake () {
         portalCam = GetComponentInChildren<Camera> ();
         portalCam.enabled = false;
@@ -37,18 +38,28 @@ public class Portal : MonoBehaviour {
         screen.material.SetInt ("displayMask", 1);
         playerLayer = LayerMask.NameToLayer("Player");
         wallLayer = LayerMask.NameToLayer("Wall");
-        //OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
+        
+        OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
+        isAdded = true;
     }
     
 
     private void OnEnable()
     {
-        OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
+        if (isAdded == false)
+        {
+            OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
+            isAdded = true;
+        }
     }
 
     private void OnDisable()
     {
-        OnDisablePortal?.Invoke(gameObject.GetComponent<Portal>());
+        if (isAdded == true)
+        {
+            OnDisablePortal?.Invoke(gameObject.GetComponent<Portal>());
+            isAdded = false;
+        }
     }
 
     void LateUpdate () {
@@ -110,18 +121,16 @@ public class Portal : MonoBehaviour {
                 var positionOld = travellerT.position;
                 var rotOld = travellerT.rotation;
                 traveller.Teleport(transform, linkedPortal.transform, m.GetColumn(3), m.rotation);
-    
+
                 traveller.graphicsClone.transform.SetPositionAndRotation(positionOld, rotOld);
                 linkedPortal.OnTravellerEnterPortal(traveller);
                 trackedTravellers.RemoveAt(i);
                 i--;
-    
+
             } else {
                 var Rotation = traveller.graphicsObject.transform.rotation; 
-                Vector3 newPosition = m.GetColumn(3);
-                newPosition.y = traveller.graphicsObject.transform.position.y; 
-                traveller.graphicsClone.transform.SetPositionAndRotation (newPosition, Rotation); 
-                //UpdateSliceParams (traveller);
+                Vector3 newPosition = m.GetColumn(3); // 변환 행렬에서 계산된 위치 사용
+                traveller.graphicsClone.transform.SetPositionAndRotation(newPosition, Rotation); 
                 traveller.previousOffsetFromPortal = offsetFromPortal;
             }
         }

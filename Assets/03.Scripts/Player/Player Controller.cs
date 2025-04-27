@@ -12,13 +12,13 @@ public class PlayerController : PortalTraveller
     private static readonly int JUMP = Animator.StringToHash("Jump");
 
     [Header("Player Movement")]
-    public float walkSpeed = 1f;
-    public float runSpeed = 2f;
+    private float walkSpeed = 4f;
+    private float runSpeed = 8f;
     public float smoothMoveTime = 0.1f;
     public CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
-    private readonly float gravity = -9.81f;
+    private readonly float gravity = 18;
     private int changeSpeed = 1;
     private int changeJump = 1;
     
@@ -82,26 +82,58 @@ public class PlayerController : PortalTraveller
             PickUpCube();
         }
         
-        if (Input.GetKeyDown (KeyCode.P)) {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-        if (Input.GetKeyDown (KeyCode.O)) {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            Cursor.lockState = CursorLockMode.None; // 먼저 잠금 해제
+            Cursor.visible = true; // 이후 커서 표시
         }
     }
-
+    Vector3 smoothV;
+    float verticalVelocity;
+    bool jumping;
+    float lastGroundedTime;
+    public float jumpForce = 8;
     private void UpdateMove()
     {
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
-        float moveX = Input.GetAxis("Horizontal") * speed * changeSpeed;
-        float moveZ = Input.GetAxis("Vertical") * speed * changeSpeed;
-        
-        animator.SetFloat(MOVE_X, moveX);
-        animator.SetFloat(MOVE_Z, moveZ);
+        Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
+        Vector3 inputDir = new Vector3(input.x, 0, input.y).normalized;
+        Vector3 worldInputDir = transform.TransformDirection(inputDir);
+        Vector3 targetVelocity = worldInputDir * (speed * changeSpeed);
+        animator.SetFloat(MOVE_X, input.x * speed);
+        animator.SetFloat(MOVE_Z, input.y * speed);
 
-        Vector3 move;
+        
+        
+        velocity = Vector3.SmoothDamp(velocity, targetVelocity, ref smoothV, smoothMoveTime);
+        
+        verticalVelocity -= gravity * Time.deltaTime;
+        velocity = new Vector3(velocity.x, verticalVelocity, velocity.z);
+        
+        var flags = controller.Move(velocity * Time.deltaTime);
+        if (flags == CollisionFlags.Below)
+        {
+            jumping = false;
+            lastGroundedTime = Time.time;
+            verticalVelocity = 0;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            float timeSinceLastGroundedTime = Time.time - lastGroundedTime;
+            if(controller.isGrounded || (!jumping && timeSinceLastGroundedTime < 0.15f))
+            {
+                jumping = true;
+                animator.SetBool(JUMP, true);
+                verticalVelocity = jumpForce * changeJump;
+            }
+        }
+        /*Vector3 move;
         if (moveZ < 0)
         {
             move = (transform.right * moveX + transform.forward * -1) * walkSpeed;
@@ -125,7 +157,7 @@ public class PlayerController : PortalTraveller
             UpdateJump(false);
         }
         
-        controller.Move(velocity * Time.deltaTime);
+        controller.Move(velocity * Time.deltaTime);*/
     }
 
     private void UpdateJump(bool isJumping)
@@ -214,7 +246,7 @@ public class PlayerController : PortalTraveller
             
             if (color.b >= 0 / 255f && color.b <= 50 / 255f)
             {
-                changeSpeed = 10;
+                changeSpeed = 3;
             }
             else
             {
@@ -223,7 +255,7 @@ public class PlayerController : PortalTraveller
             
             if (color.r >= 0 / 255f && color.r <= 50 / 255f)
             {
-                changeJump = 10;
+                changeJump = 2;
             }
             else
             {

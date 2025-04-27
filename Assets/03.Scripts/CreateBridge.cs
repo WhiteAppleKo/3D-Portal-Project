@@ -18,9 +18,18 @@ public class CreateBridge : Bridge
     private void OnDisable()
     {
         PortalGun.OnFire -= HandlePortalFire;
-        clone.GetComponent<Bridge>().ClearBridges();
+
+        if (clone != null)
+        {
+            Bridge bridgeComponent = clone.GetComponent<Bridge>();
+            if (bridgeComponent != null)
+            {
+                bridgeComponent.ClearBridges(); // Bridge의 ClearBridges 호출
+            }
+            Destroy(clone);
+        }
+
         ClearBridges();
-        Destroy(clone);
     }
 
     private void HandlePortalFire(int portalIndex)
