@@ -51,6 +51,13 @@ public class Portal : MonoBehaviour {
             OnEnablePortal?.Invoke(gameObject.GetComponent<Portal>());
             isAdded = true;
         }
+        
+        // 모든 레이어 간 충돌 활성화
+        for (int layerA = 0; layerA < 32; layerA++)
+        {
+            Physics.IgnoreLayerCollision(wallLayer, layerA, false);
+            
+        }
     }
 
     private void OnDisable()
@@ -60,6 +67,9 @@ public class Portal : MonoBehaviour {
             OnDisablePortal?.Invoke(gameObject.GetComponent<Portal>());
             isAdded = false;
         }
+
+        // 모든 레이어 간 충돌을 활성화
+        Physics.IgnoreLayerCollision(wallLayer, playerLayer, false);
     }
 
     void LateUpdate () {
@@ -356,6 +366,7 @@ public class Portal : MonoBehaviour {
             traveller.EnterPortalThreshold ();
             traveller.previousOffsetFromPortal = traveller.transform.position - transform.position;
             trackedTravellers.Add (traveller);
+            Debug.Log($"{traveller.transform.name}");
             Physics.IgnoreLayerCollision(wallLayer, travellerLayer, true);
         }
         Physics.IgnoreLayerCollision(wallLayer, travellerLayer, true);

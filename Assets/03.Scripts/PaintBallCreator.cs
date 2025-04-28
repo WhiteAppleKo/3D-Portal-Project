@@ -29,7 +29,7 @@ public class PaintBallCreator : MonoBehaviour
     {
         while (true)
         {
-            Instantiate(paintBall, transform.position, Quaternion.identity);
+            Instantiate(paintBall, transform.position, Quaternion.identity).GetComponent<Rigidbody>().AddForce(10 * transform.forward, ForceMode.Impulse);
             yield return wait;
         }
     }

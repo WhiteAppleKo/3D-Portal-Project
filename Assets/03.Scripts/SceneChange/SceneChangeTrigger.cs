@@ -6,13 +6,13 @@ using UnityEngine;
 public class SceneChangeTrigger : MonoBehaviour {
     
     // Private variables
-    private Transform trackedTraveller;
+    public Transform trackedTraveller;
     private Vector3 previousOffsetFromPortal;
     public string str;
     void LateUpdate () {
-        HandleTravellers ();
+        Travell ();
     }
-    void HandleTravellers () {
+    void Travell () {
         
         if (trackedTraveller == null) return; 
 
@@ -20,6 +20,8 @@ public class SceneChangeTrigger : MonoBehaviour {
         int portalSide = Math.Sign (Vector3.Dot (offsetFromPortal, transform.forward));
         int portalSideOld = Math.Sign (Vector3.Dot (previousOffsetFromPortal, transform.forward));
         if (portalSide != portalSideOld) { // **변경된 부분**
+            trackedTraveller = null;
+            Time.timeScale = 1f;
             SceneChanger.Instance.SceneChange(str);
         } 
     }

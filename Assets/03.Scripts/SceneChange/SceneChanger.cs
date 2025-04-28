@@ -11,9 +11,6 @@ public class SceneChanger : MonoBehaviour
     public bool[] isTested;
     public GameObject[] obj;
     public String currentSceneName;
-    public GameObject playerPreFab;
-    private GameObject player;
-    private Transform playerTransform;
 
     private void Start()
     {
@@ -21,16 +18,9 @@ public class SceneChanger : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-        }
-
-        if (playerTransform == null)
+        }else
         {
-            playerTransform = playerPreFab.transform;
-        }
-
-        if (player == null)
-        {
-            player = Instantiate(playerPreFab, playerTransform.position, playerTransform.rotation);
+            Destroy(gameObject);
         }
         isTested = new bool[5];
     }
@@ -52,8 +42,6 @@ public class SceneChanger : MonoBehaviour
     Quaternion savedRotation;
     public void SceneChange(String str)
     {
-        savedPosition = player.transform.position;
-        savedRotation = player.transform.rotation;
         SceneManager.sceneLoaded += CompleteSceneLoaded;
 
         // 씬 전환
@@ -62,8 +50,6 @@ public class SceneChanger : MonoBehaviour
 
     private void CompleteSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 새로운 씬에서 플레이어 생성
-        player = Instantiate(playerPreFab, savedPosition, savedRotation);
         var portals = FindObjectsOfType<Portal>().Where(portal => portal.gameObject.activeSelf);
         foreach (var portal in portals)
         {
@@ -71,6 +57,7 @@ public class SceneChanger : MonoBehaviour
             portal.gameObject.SetActive(true);
             portal.playerCam = Camera.main;
         }
+        isTested = new bool[5];
         // 이벤트 해제
         SceneManager.sceneLoaded -= CompleteSceneLoaded;
     }

@@ -51,32 +51,32 @@ public class CreatableWall : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        if (paintableWalls == null)
-        {
-            return;
-        }
-
-        foreach (PaintableWall paint in paintableWalls)
-        {
-            if (paint.paintableMesh != null)
-            {
-                paint.paintableMesh.enabled = false;
-            }
-
-            if (paint.paintableTexture != null)
-            {
-                paint.paintableTexture.enabled = false;
-            }
-
-            if (paint.paintableColorCounter != null)
-            {
-                paint.paintableColorCounter.enabled = false;
-            }
-        }
-        paintableWalls = null;
-    }
+    // private void OnDisable()
+    // {
+    //     if (paintableWalls == null)
+    //     {
+    //         return;
+    //     }
+    //
+    //     foreach (PaintableWall paint in paintableWalls)
+    //     {
+    //         if (paint.paintableMesh != null)
+    //         {
+    //             paint.paintableMesh.enabled = false;
+    //         }
+    //
+    //         if (paint.paintableTexture != null)
+    //         {
+    //             paint.paintableTexture.enabled = false;
+    //         }
+    //
+    //         if (paint.paintableColorCounter != null)
+    //         {
+    //             paint.paintableColorCounter.enabled = false;
+    //         }
+    //     }
+    //     paintableWalls = null;
+    // }
     
     private void LoadData()
     {

@@ -13,7 +13,7 @@ public class PlayerController : PortalTraveller
 
     [Header("Player Movement")]
     private float walkSpeed = 4f;
-    private float runSpeed = 8f;
+    private float runSpeed = 6f;
     public float smoothMoveTime = 0.1f;
     public CharacterController controller;
     private Vector3 velocity;
@@ -51,6 +51,7 @@ public class PlayerController : PortalTraveller
     private Rigidbody rb;
     private void Start()
     {
+        DontDestroyOnLoad(gameObject);
         if (lockCursor) {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -273,7 +274,8 @@ public class PlayerController : PortalTraveller
         if (cube == null)
         {
             Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            int layerMask = ~LayerMask.GetMask("Player"); // Player 레이어를 제외한 모든 레이어
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
                 if (hit.collider.gameObject.CompareTag("Cube"))
                 {
