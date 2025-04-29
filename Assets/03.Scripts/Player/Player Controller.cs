@@ -282,6 +282,10 @@ public class PlayerController : PortalTraveller
                     cube = hit.collider.gameObject; // cube 변수에 할당
                     cube.transform.SetParent(cubeTransform); // cubeTransform의 자식으로 설정
                     cube.transform.localPosition = Vector3.zero;
+                    if (cube.gameObject.name != "FinishSphere")
+                    {
+                        Destroy(cube.GetComponent<PortalPhysicsObject>());
+                    }
                     rb = hit.collider.gameObject.GetComponent<Rigidbody>();
                     rb.useGravity = false;
                     rb.constraints = RigidbodyConstraints.FreezeAll;
@@ -292,6 +296,11 @@ public class PlayerController : PortalTraveller
         {
             rb.useGravity = true;
             rb.constraints = RigidbodyConstraints.None;
+            if (cube.gameObject.name != "FinishSphere")
+            {
+                cube.AddComponent<PortalPhysicsObject>();
+                cube.GetComponent<PortalPhysicsObject>().graphicsObject = cube.transform.Find("GraphicObject").gameObject;
+            }
             cube.transform.SetParent(null); // 부모-자식 관계 해제
             cube = null; // cube 변수를 null로 초기화
         }

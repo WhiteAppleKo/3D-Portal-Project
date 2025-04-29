@@ -11,7 +11,7 @@ public class ButtonTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log(other.gameObject.name);
-        if (other.gameObject.name == "ButtonTrigger")
+        if (other.gameObject.layer == LayerMask.NameToLayer("ButtonTrigger"))
         {
             foreach (var item in obj)
             {
@@ -22,11 +22,16 @@ public class ButtonTrigger : MonoBehaviour
                 }
             }
         }
+
+        if (other.gameObject.name == "FinishSphere")
+        {
+            other.GetComponent<FinishCube>().CreatePrefab();
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.name == "ButtonTrigger")
+        if (other.gameObject.layer == LayerMask.NameToLayer("ButtonTrigger"))
         {
             foreach (var item in obj)
             {
