@@ -92,16 +92,4 @@ public class PortalTraveller : MonoBehaviour {
 
         return matList.ToArray();
     }
-    // 전달 받은 게임오브젝트를 포함한 하위 오브젝트들의 MeshRenderer를 배열로 반환하는 코드
-    // Material[] GetMaterials (GameObject g) {
-    //     var renderers = g.GetComponentsInChildren<MeshRenderer> ();
-    //     // g와 그 자식 오브젝트들에서 MeshRenderer 컴포넌트를 찾아 배열 저장
-    //     var matList = new List<Material> ();
-    //     foreach (var renderer in renderers) {
-    //         foreach (var mat in renderer.materials) {
-    //             matList.Add (mat);
-    //         }
-    //     }
-    //     return matList.ToArray ();
-    // }
 }

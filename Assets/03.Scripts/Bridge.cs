@@ -31,6 +31,7 @@ public class Bridge : MonoBehaviour
         Transform hitTransform = hitInfo.transform;
         distance = Mathf.CeilToInt(Vector3.Distance(transform.position, hitInfo.point));
         Vector3 position = transform.localPosition;
+        Debug.Log(position);
         Vector3 direction = (hitInfo.point - transform.position).normalized;
         for (int i = 0; i < distance; i++)
         {

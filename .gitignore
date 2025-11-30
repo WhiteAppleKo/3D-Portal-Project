@@ -70,3 +70,43 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+Assets/01. Scenes/PortalLab - Bridge.unity
+Assets/01. Scenes/PortalLab - Bridge.unity.meta
+Assets/01. Scenes/PortalLab - Gravity.unity
+Assets/01. Scenes/PortalLab - Gravity.unity.meta
+Assets/01. Scenes/PortalLab - PaintBall.unity
+Assets/01. Scenes/PortalLab - PaintBall.unity.meta
+Assets/01. Scenes/PortalLab - Portal.unity
+Assets/01. Scenes/PortalLab - Portal.unity.meta
+Assets/01. Scenes/PortalLab - Shader.unity
+Assets/01. Scenes/PortalLab - Shader.unity.meta
+Assets/01. Scenes/PortalLab/-----Bridge--------------------------------------------------.prefab
+Assets/01. Scenes/PortalLab/-----Bridge--------------------------------------------------.prefab.meta
+Assets/01. Scenes/PortalLab/-----GravityPortal-------------------------------------------------- (1).prefab
+Assets/01. Scenes/PortalLab/-----GravityPortal-------------------------------------------------- (1).prefab.meta
+Assets/01. Scenes/PortalLab/-----PaintBall--------------------------------------------------.prefab
+Assets/01. Scenes/PortalLab/-----PaintBall--------------------------------------------------.prefab.meta
+Assets/01. Scenes/PortalLab/-----ShowPortal--------------------------------------------------.prefab
+Assets/01. Scenes/PortalLab/-----ShowPortal--------------------------------------------------.prefab.meta
+Assets/01. Scenes/PortalLab/Tuto.prefab
+Assets/01. Scenes/PortalLab/Tuto.prefab.meta
+Assets/01. Scenes/PortalLab/-----UserPortal-------------------------------------------------- (1).prefab
+Assets/01. Scenes/PortalLab/-----UserPortal-------------------------------------------------- (1).prefab.meta
+Assets/02. Resource/Creatable_Wall.prefab
+Assets/02. Resource/Creatable_Wall.prefab.meta
+Assets/02. Resource/Glass.mat
+Assets/02. Resource/Glass.mat.meta
+Assets/03.Scripts/BallAddForce.cs
+Assets/03.Scripts/BallAddForce.cs.meta
+Assets/03.Scripts/ClassDiagram.md
+Assets/03.Scripts/ClassDiagram.md.meta
+Assets/03.Scripts/OverallSystemArchitecture.md
+Assets/03.Scripts/OverallSystemArchitecture.md.meta
+Assets/03.Scripts/PlayerAimingSystem.md
+Assets/03.Scripts/PlayerAimingSystem.md.meta
+Assets/03.Scripts/SystemArchitecture.md
+Assets/03.Scripts/SystemArchitecture.md.meta
+Assets/03.Scripts/Scripts/Demo/TeleortableObject.cs
+Assets/03.Scripts/Scripts/Demo/TeleortableObject.cs.meta
+Build.zip
+포탈 프로젝트.pdf

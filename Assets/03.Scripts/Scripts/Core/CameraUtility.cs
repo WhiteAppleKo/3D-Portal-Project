@@ -20,7 +20,7 @@ public static class CameraUtility {
         Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes (camera);
         return GeometryUtility.TestPlanesAABB (frustumPlanes, renderer.bounds);
     }
-
+    
     public static bool BoundsOverlap (MeshFilter nearObject, MeshFilter farObject, Camera camera) {
 
         // 가까운 물체 먼 물체 두개가 화면상에서 겹치는지 확인

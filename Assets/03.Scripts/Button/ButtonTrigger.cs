@@ -6,9 +6,8 @@ public class ButtonTrigger : MonoBehaviour
 {
     public GameObject[] AbleObj;
     public GameObject[] DisableOjb;
-    public GameObject NextButton;
+    public GameObject[] NextObj;
     
-    public int buttonNumber;
     private float a;
 
     private void OnTriggerEnter(Collider other)
@@ -21,13 +20,19 @@ public class ButtonTrigger : MonoBehaviour
                 if (!item.activeSelf) // 이미 활성화된 경우 호출하지 않음
                 {
                     item.SetActive(true);
-                    SceneChanger.Instance.isTestedButton(buttonNumber);
+                    SceneChanger.Instance.isTestedButton(true);
                 }
             }
 
-            if (NextButton != null)
+            if (NextObj != null)
             {
-                NextButton.SetActive(true);
+                foreach (var obj in NextObj)
+                {
+                    if (!obj.activeSelf) // 이미 활성화된 경우 호출하지 않음
+                    {
+                        obj.SetActive(true);
+                    }
+                }
             }
             
             foreach (var item in DisableOjb)

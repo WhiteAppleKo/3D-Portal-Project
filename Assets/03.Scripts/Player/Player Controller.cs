@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using RootMotion.FinalIK;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 
 public class PlayerController : PortalTraveller
@@ -67,6 +68,17 @@ public class PlayerController : PortalTraveller
         rayCamera.targetTexture = renderTexture;
     }
 
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 필요 시 lastInput 값을 사용하여 복원 로직 추가
+        input = lastInput;
+    }
+
     private void Update()
     {
         UpdateMove();
@@ -99,13 +111,27 @@ public class PlayerController : PortalTraveller
     bool jumping;
     float lastGroundedTime;
     public float jumpForce = 8;
+
+    private Vector2 input;
+    private Vector2 lastInput;
+    private Vector3 inputDir;
+    private Vector3 worldInputDir;
+    private Vector3 targetVelocity;
+    private int key;
     private void UpdateMove()
     {
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
-        Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
-        Vector3 inputDir = new Vector3(input.x, 0, input.y).normalized;
-        Vector3 worldInputDir = transform.TransformDirection(inputDir);
-        Vector3 targetVelocity = worldInputDir * (speed * changeSpeed);
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            key = 1;
+        }else if (Input.GetKeyUp(KeyCode.S))
+        {
+            key = 0;
+        }
+        input = new Vector2 (Input.GetAxisRaw ("Horizontal"), key);
+        inputDir = new Vector3(input.x, 0, input.y).normalized;
+        worldInputDir = transform.TransformDirection(inputDir);
+        targetVelocity = worldInputDir * (speed * changeSpeed);
         animator.SetFloat(MOVE_X, input.x * speed);
         animator.SetFloat(MOVE_Z, input.y * speed);
 
@@ -284,7 +310,7 @@ public class PlayerController : PortalTraveller
                     cube.transform.localPosition = Vector3.zero;
                     if (cube.gameObject.name != "FinishSphere")
                     {
-                        Destroy(cube.GetComponent<PortalPhysicsObject>());
+                        Destroy(cube.GetComponent<TeleortableObject>());
                     }
                     rb = hit.collider.gameObject.GetComponent<Rigidbody>();
                     rb.useGravity = false;
@@ -298,8 +324,8 @@ public class PlayerController : PortalTraveller
             rb.constraints = RigidbodyConstraints.None;
             if (cube.gameObject.name != "FinishSphere")
             {
-                cube.AddComponent<PortalPhysicsObject>();
-                cube.GetComponent<PortalPhysicsObject>().graphicsObject = cube.transform.Find("GraphicObject").gameObject;
+                cube.AddComponent<TeleortableObject>();
+                cube.GetComponent<TeleortableObject>().graphicsObject = cube.transform.Find("GraphicObject").gameObject;
             }
             cube.transform.SetParent(null); // 부모-자식 관계 해제
             cube = null; // cube 변수를 null로 초기화
