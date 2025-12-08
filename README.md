@@ -1,5 +1,7 @@
 # 3D Portal Project
 
+![3D Portal Project](PortalImage.jpg)
+
 ## 📜 목차
 
 1.  [**프로젝트 개요**](#1-프로젝트-개요)
